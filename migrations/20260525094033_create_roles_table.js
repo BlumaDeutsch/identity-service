@@ -3,13 +3,13 @@
  * @returns { Promise<void> }
  */
 exports.up = async function (knex) {
-    await knex.schema.createTable('users', (table) => {
+    await knex.schema.createTable('roles', (table) => {
         table.increments('id').primary();
         table.uuid('uuid').unique().defaultTo(knex.raw('gen_random_uuid()'));
-        table.string('username', 50).notNullable();
-        table.string('email', 100).notNullable().unique();
-        table.string('password_hash').notNullable();
+        table.string('name').notNullable();
+        table.integer('project_id').unsigned().notNullable().references('id').inTable('projects').onDelete('CASCADE');
         table.timestamps(true, true);
+        table.unique(['name', 'project_id']);
     });
 };
 
@@ -18,5 +18,5 @@ exports.up = async function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function (knex) {
-    await knex.schema.dropTable('users');
+    await knex.schema.dropTable('roles');
 };
